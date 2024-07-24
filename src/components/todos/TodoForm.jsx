@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TODO_CATEGORY_ICON } from '@/constants/icon'
 
 const TodoForm = ({ onAdd, onClose }) => {
@@ -7,11 +7,21 @@ const TodoForm = ({ onAdd, onClose }) => {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [category, setCategory] = useState('TODO');
+	const [isFormValid, setIsFormValid] = useState(false);
+	
+  useEffect(() => {
+    if (title.trim() === '' || summary.trim() === '') {
+      setIsFormValid(false);
+    } else {
+      setIsFormValid(true);
+    }
+  }, [title, summary]);
 
   const addTodoHandler = () => {
-		console.log(title, summary, category);
-    onAdd({ title, summary, category });
-    onClose();
+    if (isFormValid) {
+      onAdd({ title, summary, category });
+      onClose();
+    }
   };
 
   return (
@@ -38,10 +48,10 @@ const TodoForm = ({ onAdd, onClose }) => {
 						<option value='DONE'>{TODO_CATEGORY_ICON.DONE} Done</option>
 					</select>
 				</div>
-				{/* {isFormInValid && <div className='mt-2 text-red-500'>모든 항목을 채워서 작성해주세요</div>} */}
+				{!isFormValid && <div className='mt-2 text-red-500'>모든 항목을 채워서 작성해주세요</div>}
 				<div className='flex justify-end gap-4'>
 					<button className='text-xl text-white' type='button' onClick={onClose}>Cancel</button>
-					<button className='px-6 py-3 text-xl text-red-200' type='button' onClick={addTodoHandler}>Add</button>
+					<button className='px-6 py-3 text-xl text-red-200' type='button' onClick={addTodoHandler} disabled={!isFormValid}>Add</button>
 				</div>
 			</form>
     </>
