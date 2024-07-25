@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { TODO_CATEGORY_ICON } from '@/constants/icon'
 
-const TodoForm = ({ onAdd, onClose }) => {
-	// if (!isOpen) return null;
+const TodoForm = ({ onAdd, onClose, children, todo, onUpdate }) => {
 
-  const [title, setTitle] = useState('');
-  const [summary, setSummary] = useState('');
-  const [category, setCategory] = useState('TODO');
+	// children -> New Todo or Update Todo
+	const isNewTodoForm = (children) => children.startsWith('New') ? true : false;
+
+	// TODO: state를 하나의 Todo 객체로 관리할 수 있도록 state 줄여보기
+  const [title, setTitle] = useState(isNewTodoForm(children) ? '' : todo.title);
+  const [summary, setSummary] = useState(isNewTodoForm(children) ? '' : todo.summary);
+  const [category, setCategory] = useState(isNewTodoForm(children) ? 'TODO' : todo.category);
 	const [isFormValid, setIsFormValid] = useState(false);
 	
   useEffect(() => {
@@ -17,16 +20,27 @@ const TodoForm = ({ onAdd, onClose }) => {
     }
   }, [title, summary]);
 
-  const addTodoHandler = () => {
-    if (isFormValid) {
+  const addOrUpdateTodoHandler = () => {
+    if (isFormValid && isNewTodoForm(children)) {
+			// Add로직
       onAdd({ title, summary, category });
       onClose();
-    }
+    } else {
+			//Update 로직
+			const updateTodo = {
+				id: todo.id,
+				title,		// title: title과 같음
+				summary,
+				category
+			}
+			onUpdate(updateTodo);
+			onClose();
+		}
   };
 
   return (
     <>
-			{/* <h3 className="text-3xl text-red-200">{ children }</h3> */}
+			<h3 className="text-3xl text-red-200">{ children }</h3>
 			<form className='my-2'>
 				<div>
 					<label className='block mb-2 text-xl text-white' htmlFor='title'>Title</label>
@@ -51,7 +65,7 @@ const TodoForm = ({ onAdd, onClose }) => {
 				{!isFormValid && <div className='mt-2 text-red-500'>모든 항목을 채워서 작성해주세요</div>}
 				<div className='flex justify-end gap-4'>
 					<button className='text-xl text-white' type='button' onClick={onClose}>Cancel</button>
-					<button className='px-6 py-3 text-xl text-red-200' type='button' onClick={addTodoHandler} disabled={!isFormValid}>Add</button>
+					<button className='px-6 py-3 text-xl text-red-200' type='button' onClick={addOrUpdateTodoHandler} disabled={!isFormValid}>Add</button>
 				</div>
 			</form>
     </>

@@ -43,6 +43,18 @@ function App() {
     setTodos(updateTodos);
   }
 
+  // Todo 수정 기능, 파라미터로 업데이트할 Todo 객체를 받음
+  const updateTodoHandler = (updateTodo) => {
+    const updatedTodos = todos.map(todo => todo.id === updateTodo.id ? updateTodo : todo)
+
+    setTodos(updatedTodos);
+  }
+
+  // Todo 삭제 기능
+  const deleteTodoHandler = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
   return (
     <>
       <DefaultLayout>
@@ -56,7 +68,7 @@ function App() {
         <section className="max-w-xl m-4 mx-auto">
           {/* onAdd라는 이름으로 addTodoHandler 함수  */}
           <TodoHeader onAdd={addTodoHandler} />
-          <TodoBody  todos={todos}/>
+          <TodoBody todos={todos} onUpdate={updateTodoHandler} onDelete={deleteTodoHandler}/>
         </section>
       </DefaultLayout>
     </>
